@@ -1,10 +1,10 @@
 package com.lody.virtual.server.am;
 
-import com.lody.virtual.helper.utils.collection.ArrayMap;
-import com.lody.virtual.helper.utils.collection.SparseArray;
+import com.lody.virtual.helper.collection.ArrayMap;
+import com.lody.virtual.helper.collection.SparseArray;
 
-public class ProcessMap<E> {
-	final ArrayMap<String, SparseArray<E>> mMap = new ArrayMap<>();
+class ProcessMap<E> {
+	private final ArrayMap<String, SparseArray<E>> mMap = new ArrayMap<>();
 
 	public E get(String name, int uid) {
 		SparseArray<E> uids = mMap.get(name);

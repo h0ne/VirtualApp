@@ -4,7 +4,8 @@ import android.app.job.JobInfo;
 import android.os.RemoteException;
 
 import com.lody.virtual.client.env.VirtualRuntime;
-import com.lody.virtual.service.IJobScheduler;
+import com.lody.virtual.helper.ipcbus.IPCSingleton;
+import com.lody.virtual.server.interfaces.IJobService;
 
 import java.util.List;
 
@@ -16,27 +17,19 @@ public class VJobScheduler {
 
     private static final VJobScheduler sInstance = new VJobScheduler();
 
-    private IJobScheduler mRemote;
-
-    public IJobScheduler getRemote() {
-        if (mRemote == null) {
-            synchronized (this) {
-                if (mRemote == null) {
-                    Object remote = IJobScheduler.Stub.asInterface(ServiceManagerNative.getService(ServiceManagerNative.JOB));
-                    mRemote = LocalProxyUtils.genProxy(IJobScheduler.class, remote);
-                }
-            }
-        }
-        return mRemote;
-    }
+    private IPCSingleton<IJobService> singleton = new IPCSingleton<>(IJobService.class);
 
     public static VJobScheduler get() {
         return sInstance;
     }
 
+    public IJobService getService() {
+        return singleton.get();
+    }
+
     public int schedule(JobInfo job) {
         try {
-            return getRemote().schedule(job);
+            return getService().schedule(job);
         } catch (RemoteException e) {
             return VirtualRuntime.crash(e);
         }
@@ -44,7 +37,7 @@ public class VJobScheduler {
 
     public List<JobInfo> getAllPendingJobs() {
         try {
-            return getRemote().getAllPendingJobs();
+            return getService().getAllPendingJobs();
         } catch (RemoteException e) {
             return VirtualRuntime.crash(e);
         }
@@ -52,7 +45,7 @@ public class VJobScheduler {
 
     public void cancelAll() {
         try {
-            getRemote().cancelAll();
+            getService().cancelAll();
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -60,7 +53,7 @@ public class VJobScheduler {
 
     public void cancel(int jobId) {
         try {
-            getRemote().cancel(jobId);
+            getService().cancel(jobId);
         } catch (RemoteException e) {
             e.printStackTrace();
         }

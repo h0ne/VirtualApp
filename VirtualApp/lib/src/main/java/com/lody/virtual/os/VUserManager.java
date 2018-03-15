@@ -4,12 +4,10 @@ import android.graphics.Bitmap;
 import android.os.RemoteException;
 import android.util.Log;
 
-import com.lody.virtual.client.ipc.ServiceManagerNative;
-import com.lody.virtual.service.IUserManager;
+import com.lody.virtual.helper.ipcbus.IPCBus;
+import com.lody.virtual.server.interfaces.IUserManager;
 
 import java.util.List;
-
-import static com.lody.virtual.client.ipc.ServiceManagerNative.USER;
 
 /**
  * Manages users and user details on a multi-user system.
@@ -108,7 +106,7 @@ public class VUserManager {
     /** @hide */
     public synchronized static VUserManager get() {
         if (sInstance == null) {
-            IUserManager remote = IUserManager.Stub.asInterface(ServiceManagerNative.getService(USER));
+            IUserManager remote = IPCBus.get(IUserManager.class);
             sInstance = new VUserManager(remote);
         }
         return sInstance;
@@ -365,7 +363,7 @@ public class VUserManager {
      * @return a value greater than or equal to 1
      */
     public static int getMaxSupportedUsers() {
-        return 9;
+        return Integer.MAX_VALUE;
     }
 
     /**
